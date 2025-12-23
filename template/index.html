@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌿 HarvestGuard AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --green:#1b5e20;
+    --light:#66bb6a;
+    --glass:rgba(255,255,255,0.8);
+}
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:radial-gradient(circle at top left,#c8e6c9,#ffffff);
+    padding:35px 15px;
+}
+
+/* Header */
+header{text-align:center;margin-bottom:30px}
+header h1{font-size:3rem;color:var(--green)}
+header p{color:#2e7d32}
+
+/* Layout */
+.wrapper{max-width:1150px;margin:auto}
+.main{display:flex;gap:30px;flex-wrap:wrap;justify-content:center}
+
+/* Glass card */
+.glass{
+    background:var(--glass);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
+}
+
+/* Sidebar */
+.sidebar{width:260px}
+.sidebar h3{color:var(--green)}
+.sidebar li{
+    list-style:none;
+    padding:10px 0;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+}
+
+/* Main Card */
+.card{width:480px;text-align:center}
+.card h3{color:var(--green)}
+
+.upload-box{
+    margin:20px auto;
+    height:260px;
+    border:2px dashed #a5d6a7;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+}
+.upload-box img{max-width:100%;max-height:100%;display:none}
+
+/* Custom file upload */
+.upload-controls{
+    margin:15px 0 20px;
+}
+
+.file-btn{
+    display:inline-block;
+    padding:12px 28px;
+    border-radius:30px;
+    background:linear-gradient(135deg,#43a047,#81c784);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(67,160,71,0.35);
+    transition:all 0.25s ease;
+}
+
+.file-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(67,160,71,0.45);
+}
+
+#fileName{
+    display:block;
+    margin-top:8px;
+    font-size:0.8rem;
+    color:#555;
+}
+
+
+/* Button */
+button{
+    background:linear-gradient(135deg,#2e7d32,#66bb6a);
+    border:none;
+    color:#fff;
+    padding:14px 36px;
+    border-radius:40px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 10px 25px rgba(46,125,50,0.4);
+}
+button:hover{transform:translateY(-2px)}
+
+#result{
+    margin-top:20px;
+    display:none;
+    background:#e8f5e9;
+    padding:16px;
+    border-radius:12px;
+}
+
+/* Confidence bar */
+.confidence{
+    height:10px;
+    background:#c8e6c9;
+    border-radius:5px;
+    margin-top:8px;
+    overflow:hidden;
+}
+.confidence span{
+    display:block;
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#2e7d32,#81c784);
+    transition:width 1s;
+}
+
+/* ===================== */
+/* YOUR ANALYTICS CSS */
+/* ===================== */
+
+.analytics {
+    padding: 25px;
+}
+
+.analytics h3 {
+    color: #1b5e20;
+    margin-bottom: 15px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+    gap: 15px;
+}
+
+.stat {
+    background: rgba(255,255,255,0.8);
+    padding: 15px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.stat span {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.stat strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 1.1rem;
+    color: #2e7d32;
+}
+
+.recommendation {
+    margin-top: 20px;
+    background: #e8f5e9;
+    padding: 18px;
+    border-radius: 14px;
+    border-left: 6px solid #2e7d32;
+}
+
+@media(max-width:768px){
+    .sidebar,.card{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+<header>
+    <h1>🌿 HarvestGuard</h1>
+    <p>AI-Powered Crop Disease Detection</p>
+</header>
+
+<div class="main">
+
+<!-- Sidebar -->
+<div class="glass sidebar">
+    <h3>🌱 Supported Crops</h3>
+    <ul>
+        <li>🍅 Tomato – Early Blight</li>
+        <li>🥔 Potato – Late Blight</li>
+        <li>🌽 Corn – Northern Leaf Blight</li>
+        <li>🍓 Strawberry – Leaf Scorch</li>
+        <li>🍆 Brinjal – Phomopsis Blight</li>
+    </ul>
+</div>
+
+<!-- Main Card -->
+<div class="glass card">
+    <h3>Analyze Leaf Image</h3>
+    <p style="font-size:0.9rem;color:#555">Upload a clear leaf photo</p>
+
+    <div class="upload-box">
+        <span id="placeholder">Image preview</span>
+        <img id="previewImg">
+    </div>
+
+    <div class="upload-controls">
+        <label for="imageInput" class="file-btn">
+            📷 Choose Leaf Image
+        </label>
+        <span id="fileName">No file selected</span>
+    
+        <input 
+            type="file" 
+            id="imageInput" 
+            accept="image/*" 
+            onchange="previewImage(event)" 
+            hidden
+        >
+    </div>
+    
+    <br><br>
+    <button onclick="uploadImage()">DIAGNOSE NOW</button>
+
+    <div id="result">
+        <div id="predictionText"></div>
+        <div class="confidence"><span id="confFill"></span></div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- YOUR DASHBOARD HTML -->
+    <!-- ===================== -->
+    <div id="dashboard" class="glass analytics" style="display:none; margin-top:25px;">
+        <h3>📊 Disease Analytics</h3>
+
+        <div class="grid">
+            <div class="stat">
+                <span>🧬 Disease</span>
+                <strong id="diseaseName"></strong>
+            </div>
+
+            <div class="stat">
+                <span>📈 Severity</span>
+                <strong id="severity"></strong>
+            </div>
+
+            <div class="stat">
+                <span>🌡 Spread Risk</span>
+                <strong id="spread"></strong>
+            </div>
+
+            <div class="stat">
+                <span>🌾 Yield Impact</span>
+                <strong id="yieldLoss"></strong>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <h4>🛠 Recommended Action</h4>
+            <p id="actionPlan"></p>
+        </div>
+    </div>
+
+</div>
+</div>
+</div>
+
+<script>
+function previewImage(event){
+    const file = event.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(){
+        previewImg.src = reader.result;
+        previewImg.style.display = "block";
+        placeholder.style.display = "none";
+    }
+    reader.readAsDataURL(file);
+
+    document.getElementById("fileName").innerText = file.name;
+}
+
+
+/* ===================== */
+/* YOUR DISEASE DATABASE */
+/* ===================== */
+/* ===================== */
+/* UPDATED DISEASE DATABASE */
+/* ===================== */
+const diseaseDB = {
+    "Tomato - Early Blight": {
+        severity: "Moderate",
+        spread: "Medium (Rain + Humidity)",
+        yield: "20–30% loss",
+        action: "Remove infected leaves, apply copper fungicide, improve air circulation."
+    },
+    "Potato - Late Blight": {
+        severity: "High",
+        spread: "Very High (Wet & Cool)",
+        yield: "Up to 70% loss",
+        action: "Immediate fungicide spraying, destroy infected plants, avoid overhead irrigation."
+    },
+    "Corn - Northern Leaf Blight": {
+        severity: "Moderate to High",
+        spread: "Medium",
+        yield: "15–40% loss",
+        action: "Use resistant hybrids, crop rotation, fungicide if severe."
+    },
+    "Strawberry - Leaf Scorch": {
+        severity: "Low to Moderate",
+        spread: "Medium",
+        yield: "10–20% loss",
+        action: "Remove old leaves, improve sunlight exposure, apply approved fungicides."
+    },
+    "Brinjal - Phomopsis Blight": {
+        severity: "High",
+        spread: "High",
+        yield: "30–50% loss",
+        action: "Use disease-free seeds, remove affected fruits, apply carbendazim-based fungicide."
+    }
+};
+
+async function uploadImage() {
+    const imageInput = document.getElementById('imageInput');
+    const result = document.getElementById('result');
+    const predictionText = document.getElementById('predictionText');
+    const confFill = document.getElementById('confFill');
+    const dashboard = document.getElementById('dashboard');
+
+    if (!imageInput.files.length) {
+        alert("Please upload an image");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", imageInput.files[0]);
+
+    // UI Reset
+    result.style.display = "block";
+    dashboard.style.display = "none"; // Hide dashboard for new analysis
+    predictionText.innerHTML = "🤖 AI analyzing specimen...";
+    confFill.style.width = "0%";
+
+    try {
+        const response = await fetch("/predict", { method: "POST", body: formData });
+        const data = await response.json();
+
+        predictionText.innerHTML = `<b>Status:</b> ${data.prediction}<br><b>Confidence:</b> ${data.confidence}`;
+        confFill.style.width = data.confidence;
+
+        const diseaseKey = data.prediction;
+
+        // SHOW DASHBOARD ONLY IF DISEASED
+        if (diseaseDB[diseaseKey]) {
+            const d = diseaseDB[diseaseKey];
+            dashboard.style.display = "block";
+            document.getElementById('diseaseName').innerText = diseaseKey;
+            document.getElementById('severity').innerText = d.severity;
+            document.getElementById('spread').innerText = d.spread;
+            document.getElementById('yieldLoss').innerText = d.yield;
+            document.getElementById('actionPlan').innerText = d.action;
+        } else {
+            // Case for "Healthy" plants
+            dashboard.style.display = "block";
+            document.getElementById('diseaseName').innerText = "None (Healthy)";
+            document.getElementById('severity').innerText = "None";
+            document.getElementById('spread').innerText = "Low";
+            document.getElementById('yieldLoss').innerText = "0%";
+            document.getElementById('actionPlan').innerText = "No treatment required. Continue standard care.";
+        }
+    } catch (error) {
+        predictionText.innerHTML = "❌ Connection Error.";
+    }
+}
+
+/* ===================== */
+/* AUTO SHOW DASHBOARD */
+/* ===================== */
+async function uploadImage(){
+    if(!imageInput.files.length){
+        alert("Please upload an image");
+        return;
+    }
+
+    const formData=new FormData();
+    formData.append("file",imageInput.files[0]);
+
+    result.style.display="block";
+    predictionText.innerHTML="🤖 AI analyzing specimen...";
+    confFill.style.width="0%";
+
+    const response=await fetch("/predict",{method:"POST",body:formData});
+    const data=await response.json();
+
+    predictionText.innerHTML=`<b>Status:</b> ${data.prediction}<br><b>Confidence:</b> ${data.confidence}`;
+    confFill.style.width=data.confidence;
+
+    const diseaseKey = data.prediction;
+
+    if (diseaseDB[diseaseKey]) {
+        const d = diseaseDB[diseaseKey];
+        dashboard.style.display = "block";
+        diseaseName.innerText = diseaseKey;
+        severity.innerText = d.severity;
+        spread.innerText = d.spread;
+        yieldLoss.innerText = d.yield;
+        actionPlan.innerText = d.action;
+    }
+}
+</script>
+
+</body>
+</html>
